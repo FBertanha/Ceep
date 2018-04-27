@@ -17,11 +17,28 @@ import static bertanha.com.br.ceep.ui.activity.NotaActivityConstantes.CODIGO_RES
 public class FormularioNotaActivity extends AppCompatActivity {
 
 
+    public static final int POSICAO_INVALIDA = -1;
+    private int posicaoRecebida = POSICAO_INVALIDA;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_formulario_nota);
+
+        Intent dadosRecebidos = getIntent();
+
+        if (dadosRecebidos.hasExtra(CHAVE_NOTA) && dadosRecebidos.hasExtra("posicao")) {
+            Nota notaRecebida = (Nota) dadosRecebidos.getSerializableExtra(CHAVE_NOTA);
+            posicaoRecebida = dadosRecebidos.getIntExtra("posicao", -1);
+
+            EditText titulo = findViewById(R.id.formulario_nota_titulo);
+            EditText descricao = findViewById(R.id.formulario_nota_descricao);
+
+            titulo.setText(notaRecebida.getTitulo());
+            descricao.setText(notaRecebida.getDescricao());
+
+        }
+
     }
 
     @Override
@@ -44,6 +61,7 @@ public class FormularioNotaActivity extends AppCompatActivity {
     private void retornaNota(Nota notaCriada) {
         Intent resultadoInsercao = new Intent();
         resultadoInsercao.putExtra(CHAVE_NOTA, notaCriada);
+        resultadoInsercao.putExtra("posicao", posicaoRecebida);
         setResult(CODIGO_RESULTADO_NOTA_CRIADA, resultadoInsercao);
     }
 
