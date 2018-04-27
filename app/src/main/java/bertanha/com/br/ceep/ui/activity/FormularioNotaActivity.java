@@ -1,16 +1,13 @@
 package bertanha.com.br.ceep.ui.activity;
 
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
 
 import bertanha.com.br.ceep.R;
-import bertanha.com.br.ceep.dao.NotaDAO;
 import bertanha.com.br.ceep.model.Nota;
 
 public class FormularioNotaActivity extends AppCompatActivity {
@@ -34,7 +31,10 @@ public class FormularioNotaActivity extends AppCompatActivity {
             EditText descricao = findViewById(R.id.formulario_nota_descricao);
 
             Nota notaCriada = new Nota(titulo.getText().toString(), descricao.getText().toString());
-            new NotaDAO().insere(notaCriada);
+
+            Intent resultadoInsercao = new Intent();
+            resultadoInsercao.putExtra("nota", notaCriada);
+            setResult(2, resultadoInsercao);
             finish();
         }
         return super.onOptionsItemSelected(item);

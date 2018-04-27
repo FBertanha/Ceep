@@ -18,21 +18,35 @@ import bertanha.com.br.ceep.ui.recyclerview.adapter.ListaNotasAdapter;
 
 public class ListaNotasActivity extends AppCompatActivity {
 
+    private ListaNotasAdapter adapter;
+    private List<Nota> todasNotas;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista_notas);
-        List<Nota> todasNotas = notasDeExemplo();
+        todasNotas = notasDeExemplo();
         configuraRecyclerView(todasNotas);
 
         TextView botaoInsereNota = findViewById(R.id.lista_notas_insere_nota);
         botaoInsereNota.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(ListaNotasActivity.this, FormularioNotaActivity.class));
+                Intent iniciaFormularioNota = new Intent(ListaNotasActivity.this, FormularioNotaActivity.class);
+                startActivityForResult(iniciaFormularioNota, 1);
             }
         });
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1 && resultCode == 2 && data.hasExtra("nota")) {
+            Nota notaRecebida = (Nota) data.getSerializableExtra("nota");
+            new NotaDAO().insere(notaRecebida);
+            adapter.adiciona(notaRecebida);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private List<Nota> notasDeExemplo() {
@@ -46,10 +60,6 @@ public class ListaNotasActivity extends AppCompatActivity {
         return dao.todos();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
 
     private void configuraRecyclerView(List<Nota> todasNotas) {
         RecyclerView listaNotas = findViewById(R.id.lista_notas_recyclerview);
@@ -63,6 +73,7 @@ public class ListaNotasActivity extends AppCompatActivity {
     }
 
     private void configuraAdapter(List<Nota> todasNotas, RecyclerView listaNotas) {
-        listaNotas.setAdapter(new ListaNotasAdapter(this, todasNotas));
+        adapter = new ListaNotasAdapter(this, todasNotas);
+        listaNotas.setAdapter(adapter);
     }
 }
