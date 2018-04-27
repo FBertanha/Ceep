@@ -12,33 +12,40 @@ import bertanha.com.br.ceep.R;
 import bertanha.com.br.ceep.model.Nota;
 
 import static bertanha.com.br.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOTA;
-import static bertanha.com.br.ceep.ui.activity.NotaActivityConstantes.CODIGO_RESULTADO_NOTA_CRIADA;
+import static bertanha.com.br.ceep.ui.activity.NotaActivityConstantes.CHAVE_POSICAO;
+import static bertanha.com.br.ceep.ui.activity.NotaActivityConstantes.POSICAO_INVALIDA;
 
 public class FormularioNotaActivity extends AppCompatActivity {
 
 
-    public static final int POSICAO_INVALIDA = -1;
+
     private int posicaoRecebida = POSICAO_INVALIDA;
+    private EditText titulo;
+    private EditText descricao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_formulario_nota);
-
+        inicializaCampos();
         Intent dadosRecebidos = getIntent();
 
-        if (dadosRecebidos.hasExtra(CHAVE_NOTA) && dadosRecebidos.hasExtra("posicao")) {
+        if (dadosRecebidos.hasExtra(CHAVE_NOTA)) {
             Nota notaRecebida = (Nota) dadosRecebidos.getSerializableExtra(CHAVE_NOTA);
-            posicaoRecebida = dadosRecebidos.getIntExtra("posicao", -1);
-
-            EditText titulo = findViewById(R.id.formulario_nota_titulo);
-            EditText descricao = findViewById(R.id.formulario_nota_descricao);
-
-            titulo.setText(notaRecebida.getTitulo());
-            descricao.setText(notaRecebida.getDescricao());
-
+            posicaoRecebida = dadosRecebidos.getIntExtra(CHAVE_POSICAO, POSICAO_INVALIDA);
+            preencheCampos(notaRecebida);
         }
 
+    }
+
+    private void preencheCampos(Nota notaRecebida) {
+        titulo.setText(notaRecebida.getTitulo());
+        descricao.setText(notaRecebida.getDescricao());
+    }
+
+    private void inicializaCampos() {
+        titulo = findViewById(R.id.formulario_nota_titulo);
+        descricao = findViewById(R.id.formulario_nota_descricao);
     }
 
     @Override
@@ -61,14 +68,12 @@ public class FormularioNotaActivity extends AppCompatActivity {
     private void retornaNota(Nota notaCriada) {
         Intent resultadoInsercao = new Intent();
         resultadoInsercao.putExtra(CHAVE_NOTA, notaCriada);
-        resultadoInsercao.putExtra("posicao", posicaoRecebida);
-        setResult(CODIGO_RESULTADO_NOTA_CRIADA, resultadoInsercao);
+        resultadoInsercao.putExtra(CHAVE_POSICAO, posicaoRecebida);
+        setResult(RESULT_OK, resultadoInsercao);
     }
 
     @NonNull
     private Nota criaNota() {
-        EditText titulo = findViewById(R.id.formulario_nota_titulo);
-        EditText descricao = findViewById(R.id.formulario_nota_descricao);
 
         return new Nota(titulo.getText().toString(), descricao.getText().toString());
     }
